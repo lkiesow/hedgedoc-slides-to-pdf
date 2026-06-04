@@ -12,9 +12,8 @@ Examples:
 """
 
 import argparse
-import sys
 import time
-from pathlib import Path
+from io import BytesIO
 
 from PIL import Image
 from playwright.sync_api import sync_playwright
@@ -109,7 +108,6 @@ def capture_slides(
     print(f"\n  Captured {len(screenshots)} slide(s).")
 
     # Convert raw PNG bytes → PIL Images
-    from io import BytesIO
     return [Image.open(BytesIO(b)) for b in screenshots]
 
 

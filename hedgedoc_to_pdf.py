@@ -112,10 +112,10 @@ def capture_slides(
             time.sleep(wait_ms / 1000)
             png = page.screenshot(full_page=False)
             screenshots.append(png)
-            print(f"  📸  Slide {slide_num}", end="\r", flush=True)
+            print(f"📸  Slide {slide_num}", end="\r", flush=True)
 
             if not has_next_slide():
-                print(f"\n  ⛔  No more slides after slide {slide_num} — stopping.")
+                print(f"\n⛔  No more slides after slide {slide_num} — stopping.")
                 break
 
             # Advance to the next slide
@@ -126,7 +126,7 @@ def capture_slides(
 
         browser.close()
 
-    print(f"\n  Captured {len(screenshots)} slide(s).")
+    print(f"\n📄  Captured {len(screenshots)} slide(s).")
 
     # Convert raw PNG bytes → PIL Images
     return [Image.open(BytesIO(b)) for b in screenshots]

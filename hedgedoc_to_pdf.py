@@ -89,6 +89,11 @@ def capture_slides(
             perform_login(page)
         time.sleep(wait_ms / 1000 * 2)          # extra settle time for JS init
 
+        if not login and page.query_selector("button.ui-signin"):
+            raise SystemExit(
+                "🔒  This presentation requires login. Re-run with --login to authenticate first."
+            )
+
         # Hide the cursor / controls that might appear in screenshots
         page.evaluate("""() => {
             const style = document.createElement('style');

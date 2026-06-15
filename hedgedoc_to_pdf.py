@@ -29,6 +29,16 @@ def ensure_slideshow_url(url: str) -> str:
     return url
 
 
+def perform_login(page) -> None:
+    """Click the HedgeDoc Sign In button and wait for the user to finish logging in."""
+    print("🔐  Waiting for Sign in button...")
+    page.wait_for_selector("button.ui-signin", timeout=15_000)
+    page.click("button.ui-signin")
+    print("🔑  Login dialog opened. Please log in — export starts automatically after login.")
+    page.wait_for_selector("button.ui-signin", state="detached", timeout=300_000)
+    print("🔓  Login detected — starting export...")
+
+
 def slides_to_pdf(images: list[Image.Image], output_path: str) -> None:
     """Save a list of PIL Images as a single multi-page PDF."""
     if not images:
@@ -49,6 +59,7 @@ def capture_slides(
     wait_ms: int = 800,
     max_slides: int = 300,
     headless: bool = True,
+    login: bool = False,
 ) -> list[Image.Image]:
     """
     Open a HedgeDoc reveal.js presentation and screenshot every slide.
@@ -65,12 +76,17 @@ def capture_slides(
 
     screenshots: list[bytes] = []
 
+    if login:
+        headless = False
+
     with sync_playwright() as pw:
         browser = pw.firefox.launch(headless=headless)
         page = browser.new_page(viewport={"width": width, "height": height})
 
         # Load the presentation
         page.goto(url, wait_until="networkidle", timeout=30_000)
+        if login:
+            perform_login(page)
         time.sleep(wait_ms / 1000 * 2)          # extra settle time for JS init
 
         # Hide the cursor / controls that might appear in screenshots
@@ -139,6 +155,10 @@ def parse_args() -> argparse.Namespace:
         "--no-headless", action="store_true",
         help="Show the browser window while capturing (useful for debugging)",
     )
+    p.add_argument(
+        "--login", action="store_true",
+        help="Open the browser visually, click Sign in, and wait for manual login before capturing.",
+    )
     return p.parse_args()
 
 
@@ -168,6 +188,7 @@ def main() -> None:
         wait_ms=args.wait,
         max_slides=args.max_slides,
         headless=not args.no_headless,
+        login=args.login,
     )
 
     slides_to_pdf(images, output)

@@ -38,6 +38,7 @@ python hedgedoc_to_pdf.py <URL> [options]
 | `--wait`          | Milliseconds to wait after each slide navigation (default: `800`)                 |
 | `--max-slides`    | Safety cap on the number of slides (default: `300`)                               |
 | `--no-headless`   | Show the browser window while capturing (useful for debugging)                    |
+| `--login`         | Open browser, click **Sign in**, and wait for login (implies `--no-headless`)     |
 
 ### Examples
 
